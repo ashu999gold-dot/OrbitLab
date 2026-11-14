@@ -386,13 +386,16 @@ export const OrbitCanvas: React.FC<OrbitCanvasProps> = ({
 
     // Render loop
     let animId: number;
-    let clock = new THREE.Clock();
+    let lastTime = performance.now();
+    const startTime = performance.now();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
 
-      const delta = clock.getDelta();
-      const timeElapsed = clock.getElapsedTime();
+      const now = performance.now();
+      const delta = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      const timeElapsed = (now - startTime) / 1000;
       const current = stateRef.current;
       const sm = scaleManagerRef.current;
 
