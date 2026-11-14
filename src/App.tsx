@@ -3,14 +3,17 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Activity,
   BookOpen,
   Camera,
   FlaskConical,
+  Maximize2,
   Orbit,
   Pause,
   Play,
   RotateCcw,
   Sliders,
+  StepForward,
 } from 'lucide-react';
 import type { CelestialBody, SystemState, Vector3D } from './physics/physics-types';
 import { PRESET_LIBRARY, type PresetSystem } from './simulation/presets';
@@ -379,54 +382,120 @@ export const App: React.FC = () => {
         </div>
 
         {/* Action Header Buttons */}
-        <div className="flex items-center gap-2">
-          {/* Quick Play/Pause */}
-          <button
-            onClick={handleTogglePlay}
-            className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-              isPlaying
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
-                : 'bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/30'
-            }`}
-            title="Spacebar: Toggle Simulation"
-          >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
-            <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
-          </button>
+        <div className="flex items-center gap-1.5">
+          {/* Unified Transport Controls */}
+          <div className="flex items-center bg-space-950/80 p-0.5 rounded-lg border border-white/10">
+            <button
+              onClick={handleTogglePlay}
+              className={`py-1 px-2.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                isPlaying
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
+                  : 'bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/30'
+              }`}
+              title="Spacebar: Play/Pause"
+            >
+              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+              <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
+            </button>
 
-          <button
-            onClick={handleReset}
-            className="p-2 rounded-lg bg-space-850 hover:bg-space-800 text-slate-300 border border-white/10 hover:text-white transition-colors"
-            title="R: Reset Simulation"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+            <button
+              onClick={handleStepForward}
+              disabled={isPlaying}
+              className="p-1.5 rounded-md hover:bg-white/5 text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="S: Step Forward by 1 Timestep (Δt)"
+            >
+              <StepForward className="w-3.5 h-3.5" />
+            </button>
 
+            <button
+              onClick={handleReset}
+              className="p-1.5 rounded-md hover:bg-white/5 text-slate-300 hover:text-rose-300 transition-colors"
+              title="R: Reset Simulation"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={() => setResetCameraTrigger((c) => c + 1)}
+              className="p-1.5 rounded-md hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
+              title="C: Reset Camera View Orientation"
+            >
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="w-px h-5 bg-white/10 mx-0.5" />
+
+          {/* Tools */}
           <button
-            onClick={() => setResetCameraTrigger((c) => c + 1)}
-            className="p-2 rounded-lg bg-space-850 hover:bg-space-800 text-slate-300 border border-white/10 hover:text-white transition-colors"
-            title="C: Reset Camera View"
+            onClick={() => setShowObjectEditor(true)}
+            className="px-2.5 py-1.5 rounded-lg bg-space-850 hover:bg-space-800 text-slate-200 border border-white/10 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
+            title="Edit Celestial Body Masses, Radii, Positions & Velocities"
           >
-            <Camera className="w-4 h-4" />
+            <Sliders className="w-3.5 h-3.5 text-blue-400" />
+            <span className="hidden md:inline">Edit Bodies</span>
           </button>
 
           <button
             onClick={() => setShowExperimentsModal(true)}
-            className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-medium flex items-center gap-1.5 transition-all"
+            className="px-2.5 py-1.5 rounded-lg bg-space-850 hover:bg-space-800 text-purple-300 border border-white/10 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
             title="Open Guided Experiments & Comparison"
           >
-            <FlaskConical className="w-4 h-4" />
+            <FlaskConical className="w-3.5 h-3.5 text-purple-400" />
             <span className="hidden md:inline">Experiments</span>
           </button>
 
           <button
             onClick={() => setShowEducationModal(true)}
-            className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs font-medium flex items-center gap-1.5 transition-all"
-            title="Open ME 206 Theory & Physics Guide"
+            className="px-2.5 py-1.5 rounded-lg bg-space-850 hover:bg-space-800 text-blue-400 border border-white/10 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
+            title="Open ME 206 Statics & Dynamics Theory Guide"
           >
-            <BookOpen className="w-4 h-4" />
-            <span className="hidden md:inline">Theory Guide</span>
+            <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+            <span className="hidden lg:inline">Theory Guide</span>
           </button>
+
+          <div className="w-px h-5 bg-white/10 mx-0.5 hidden sm:block" />
+
+          {/* Sidebars & Zen View Toggles */}
+          <div className="hidden sm:flex items-center gap-1 bg-space-950/80 p-0.5 rounded-lg border border-white/10 text-xs">
+            <button
+              onClick={() => setShowControls(!showControls)}
+              className={`p-1.5 rounded-md transition-all ${
+                showControls ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'text-slate-400 hover:text-slate-200'
+              }`}
+              title={showControls ? 'Hide Controls Panel' : 'Show Controls Panel'}
+            >
+              <Sliders className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={() => setShowDashboard(!showDashboard)}
+              className={`p-1.5 rounded-md transition-all ${
+                showDashboard ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'text-slate-400 hover:text-slate-200'
+              }`}
+              title={showDashboard ? 'Hide Telemetry Dashboard' : 'Show Telemetry Dashboard'}
+            >
+              <Activity className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={() => {
+                if (showControls || showDashboard) {
+                  setShowControls(false);
+                  setShowDashboard(false);
+                } else {
+                  setShowControls(true);
+                  setShowDashboard(true);
+                }
+              }}
+              className={`p-1.5 rounded-md transition-all ${
+                !showControls && !showDashboard ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/30' : 'text-slate-400 hover:text-slate-200'
+              }`}
+              title={!showControls && !showDashboard ? 'Exit Zen View (Show Panels)' : 'Zen View: Full 3D Focus'}
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -457,7 +526,7 @@ export const App: React.FC = () => {
         </div>
 
         {/* Floating Left Overlay: Simulation Controls & Presets */}
-        <div className="absolute top-4 left-4 z-20 max-w-sm w-full">
+        <div className="absolute top-4 left-4 z-20 w-80">
           {showControls ? (
             <ControlsPanel
               isPlaying={isPlaying}
@@ -503,7 +572,7 @@ export const App: React.FC = () => {
           ) : (
             <button
               onClick={() => setShowControls(true)}
-              className="glass-panel px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white flex items-center gap-2 hover:bg-space-850/80 transition-all border border-white/10"
+              className="glass-panel px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white flex items-center gap-2 hover:bg-space-850/80 transition-all border border-white/10 shadow-lg"
             >
               <Sliders className="w-4 h-4 text-blue-400" />
               <span>Show Controls</span>
@@ -512,7 +581,7 @@ export const App: React.FC = () => {
         </div>
 
         {/* Floating Right Overlay: Live Physics Dashboard & Graphs */}
-        <div className="absolute top-4 right-4 z-20 max-w-sm w-full">
+        <div className="absolute top-4 right-4 z-20 w-80">
           <PhysicsDashboard
             systemState={systemState}
             isFallingBehind={isFallingBehind}
@@ -529,7 +598,7 @@ export const App: React.FC = () => {
         </div>
 
         {/* Center-Top Quick Status Indicator */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-space-900/80 backdrop-blur-md border border-white/10 text-xs font-mono shadow-xl">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 hidden xl:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-space-900/80 backdrop-blur-md border border-white/10 text-xs font-mono shadow-xl">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-slate-400">Time:</span>
@@ -551,23 +620,17 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Floating Universal Object Editor Drawer / Modal */}
+        {/* Centered Modal: Universal Object Editor */}
         {showObjectEditor && (
-          <div className="absolute top-4 left-4 z-40 max-w-sm w-full">
-            <div className="flex justify-between items-center mb-1 px-1">
-              <span className="text-xs text-slate-400 font-mono">Object Editor Mode</span>
-              <button
-                onClick={() => setShowObjectEditor(false)}
-                className="text-xs text-slate-400 hover:text-white bg-space-900/80 px-2 py-0.5 rounded border border-white/10"
-              >
-                Close Editor
-              </button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <UniversalObjectEditor
+                bodies={systemState.bodies}
+                onApplyBodies={handleApplyCustomBodies}
+                onResetToPreset={handleReset}
+                onClose={() => setShowObjectEditor(false)}
+              />
             </div>
-            <UniversalObjectEditor
-              bodies={systemState.bodies}
-              onApplyBodies={handleApplyCustomBodies}
-              onResetToPreset={handleReset}
-            />
           </div>
         )}
       </main>

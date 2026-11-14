@@ -136,14 +136,23 @@ export const PhysicsDashboard: React.FC<PhysicsDashboardProps> = ({
   }
 
   return (
-    <div className="glass-panel rounded-xl p-3.5 border border-white/10 flex flex-col gap-3 shadow-2xl max-w-sm w-full overflow-y-auto max-h-[calc(100vh-100px)]">
+    <div className="glass-panel rounded-xl p-3 border border-white/10 flex flex-col gap-2.5 shadow-2xl w-full overflow-y-auto max-h-[calc(100vh-100px)] select-none">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/10 pb-2">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-blue-400" />
           <h2 className="text-xs font-semibold tracking-wide text-slate-100 uppercase">
-            Physics Dashboard
+            Physics Telemetry
           </h2>
+          {isFallingBehind && (
+            <span
+              className="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 flex items-center gap-1"
+              title="Simulation speed throttled to max substeps per frame to preserve symplectic numerical accuracy."
+            >
+              <Clock className="w-2.5 h-2.5" />
+              Accuracy Clamp
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-1.5">
           <button
@@ -164,14 +173,6 @@ export const PhysicsDashboard: React.FC<PhysicsDashboardProps> = ({
           )}
         </div>
       </div>
-
-      {/* Falling Behind Warning */}
-      {isFallingBehind && (
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2 flex items-center gap-2 text-amber-300 text-[11px]">
-          <Clock className="w-4 h-4 shrink-0 text-amber-400" />
-          <span>Simulation speed limited: reached max substeps per frame to preserve symplectic numerical accuracy.</span>
-        </div>
-      )}
 
       {/* Collision Warning */}
       {collision.isColliding && (

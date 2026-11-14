@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import {
   AlertCircle,
   Sliders,
+  X,
 } from 'lucide-react';
 import type { BodyCategory, CelestialBody, Vector3D } from '../../physics/physics-types';
 import {
@@ -27,12 +28,14 @@ interface UniversalObjectEditorProps {
   bodies: [CelestialBody, CelestialBody];
   onApplyBodies: (b1: CelestialBody, b2: CelestialBody) => void;
   onResetToPreset: () => void;
+  onClose?: () => void;
 }
 
 export const UniversalObjectEditor: React.FC<UniversalObjectEditorProps> = ({
   bodies,
   onApplyBodies,
   onResetToPreset,
+  onClose,
 }) => {
   const [editorMode, setEditorMode] = useState<'simple' | 'advanced'>('simple');
   const [activeBodyTab, setActiveBodyTab] = useState<'body1' | 'body2'>('body1');
@@ -283,6 +286,15 @@ export const UniversalObjectEditor: React.FC<UniversalObjectEditorProps> = ({
               Advanced
             </button>
           </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              title="Close Object Editor"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 

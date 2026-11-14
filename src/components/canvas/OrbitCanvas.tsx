@@ -412,15 +412,18 @@ export const OrbitCanvas: React.FC<OrbitCanvasProps> = ({
       const p2 = new THREE.Vector3(p2Raw.x, p2Raw.y, p2Raw.z);
       const pBary = new THREE.Vector3(pBaryRaw.x, pBaryRaw.y, pBaryRaw.z);
 
+      // Reference radius for proportional physical scaling
+      const maxPhysicalRadius = Math.max(b1.radius, b2.radius);
+
       // Body 1 updates
       body1Group.position.copy(p1);
-      const r1Visual = sm.toVisualRadius(b1.radius);
+      const r1Visual = sm.toVisualRadius(b1.radius, maxPhysicalRadius);
       body1Group.scale.set(r1Visual, r1Visual, r1Visual);
       body1Group.rotation.y += delta * 0.4;
 
       // Body 2 updates
       body2Group.position.copy(p2);
-      const r2Visual = sm.toVisualRadius(b2.radius);
+      const r2Visual = sm.toVisualRadius(b2.radius, maxPhysicalRadius);
       body2Group.scale.set(r2Visual, r2Visual, r2Visual);
       body2Group.rotation.y += delta * 0.6;
 
@@ -507,30 +510,31 @@ export const OrbitCanvas: React.FC<OrbitCanvasProps> = ({
         compTrail2Line.visible = false;
       }
 
-      // Velocity vectors
+      // Velocity vectors (lengths proportional to physical speed ratio)
       if (current.showVelocityVectors) {
         v1Arrow.visible = true;
         v2Arrow.visible = true;
 
         const v1Len = Math.sqrt(b1.velocity.x ** 2 + b1.velocity.y ** 2 + b1.velocity.z ** 2);
         const v2Len = Math.sqrt(b2.velocity.x ** 2 + b2.velocity.y ** 2 + b2.velocity.z ** 2);
+        const vMax = Math.max(v1Len, v2Len, 1e-6);
 
-        if (v1Len > 1e-4) {
+        if (v1Len > 1e-6) {
           const v1Dir = new THREE.Vector3(b1.velocity.x, b1.velocity.z, b1.velocity.y).normalize();
           v1Arrow.setDirection(v1Dir);
           v1Arrow.position.copy(p1);
-          const arrowLen1 = Math.min(14, Math.max(2.5, Math.log10(v1Len + 1) * 2.2));
-          v1Arrow.setLength(arrowLen1, arrowLen1 * 0.28, arrowLen1 * 0.16);
+          const arrowLen1 = Math.max(1.0, (v1Len / vMax) * 10.0);
+          v1Arrow.setLength(arrowLen1, Math.min(arrowLen1 * 0.35, 1.4), Math.min(arrowLen1 * 0.2, 0.7));
         } else {
           v1Arrow.visible = false;
         }
 
-        if (v2Len > 1e-4) {
+        if (v2Len > 1e-6) {
           const v2Dir = new THREE.Vector3(b2.velocity.x, b2.velocity.z, b2.velocity.y).normalize();
           v2Arrow.setDirection(v2Dir);
           v2Arrow.position.copy(p2);
-          const arrowLen2 = Math.min(14, Math.max(2.5, Math.log10(v2Len + 1) * 2.2));
-          v2Arrow.setLength(arrowLen2, arrowLen2 * 0.28, arrowLen2 * 0.16);
+          const arrowLen2 = Math.max(1.0, (v2Len / vMax) * 10.0);
+          v2Arrow.setLength(arrowLen2, Math.min(arrowLen2 * 0.35, 1.4), Math.min(arrowLen2 * 0.2, 0.7));
         } else {
           v2Arrow.visible = false;
         }
@@ -539,7 +543,7 @@ export const OrbitCanvas: React.FC<OrbitCanvasProps> = ({
         v2Arrow.visible = false;
       }
 
-      // Force vectors
+      // Force vectors (Newton's 3rd Law: action & reaction have equal magnitude pointing towards each other)
       if (current.showForceVectors) {
         f1Arrow.visible = true;
         f2Arrow.visible = true;
@@ -556,10 +560,10 @@ export const OrbitCanvas: React.FC<OrbitCanvasProps> = ({
           f2Arrow.setDirection(dir2To1);
           f2Arrow.position.copy(p2);
 
-          const fMag = pState.forceMagnitude;
-          const arrowLen = Math.min(12, Math.max(2.5, Math.log10(fMag + 1) * 0.45));
-          f1Arrow.setLength(arrowLen, arrowLen * 0.28, arrowLen * 0.16);
-          f2Arrow.setLength(arrowLen, arrowLen * 0.28, arrowLen * 0.16);
+          // Force arrow length proportional to mutual attraction
+          const arrowLen = Math.min(10.0, Math.max(1.8, Math.min(dist * 0.3, 7.5)));
+          f1Arrow.setLength(arrowLen, Math.min(arrowLen * 0.35, 1.4), Math.min(arrowLen * 0.2, 0.7));
+          f2Arrow.setLength(arrowLen, Math.min(arrowLen * 0.35, 1.4), Math.min(arrowLen * 0.2, 0.7));
         }
       } else {
         f1Arrow.visible = false;

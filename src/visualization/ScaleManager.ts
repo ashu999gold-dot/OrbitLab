@@ -105,14 +105,29 @@ export class ScaleManager {
 
   /**
    * Computes the rendered visual mesh radius in Three.js units.
-   * Clamped between a visible minimum (0.5 units) and maximum (7.0 units).
+   * If enableExaggeratedRadius is false: renders exact 1:1 physical scale.
+   * If enableExaggeratedRadius is true: scales smoothly and proportionally
+   * based on the ratio of physical radii, preserving the relative size difference
+   * while ensuring bodies remain clearly visible without overwhelming the scene.
    */
-  public toVisualRadius(physicalRadiusMeters: number): number {
+  public toVisualRadius(physicalRadiusMeters: number, referenceRadiusMeters?: number): number {
     const naturalVisualRadius = physicalRadiusMeters * this.config.distanceScale;
     if (!this.config.enableExaggeratedRadius) {
-      return Math.max(0.1, naturalVisualRadius);
+      return Math.max(0.05, naturalVisualRadius);
     }
-    const exaggerated = naturalVisualRadius * this.config.radiusScaleMultiplier;
-    return Math.max(0.6, Math.min(6.5, exaggerated));
+
+    // Proportional physical-relative scaling:
+    // Scale relative to reference body with smooth sublinear compression (p = 0.45),
+    // preserving visual distinction between primary and secondary bodies.
+    if (referenceRadiusMeters && referenceRadiusMeters > 0) {
+      const ratio = Math.max(1e-6, physicalRadiusMeters / referenceRadiusMeters);
+      const basePrimaryRadius = 2.0; // Clean 2.0 scene units for primary (out of ~50 unit separation)
+      const visualSize = basePrimaryRadius * Math.pow(ratio, 0.45);
+      return Math.max(0.35, Math.min(3.2, visualSize));
+    }
+
+    const natural = Math.max(1e-6, naturalVisualRadius);
+    const scaled = Math.pow(natural, 0.35) * 1.8;
+    return Math.max(0.35, Math.min(3.2, scaled));
   }
 }

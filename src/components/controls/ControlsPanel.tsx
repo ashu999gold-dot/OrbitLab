@@ -127,7 +127,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   const speedPresets = [1, 10, 100, 1000, 100000];
 
   return (
-    <div className="glass-panel rounded-xl p-3.5 border border-white/10 flex flex-col gap-3 shadow-2xl max-w-sm w-full select-none">
+    <div className="glass-panel rounded-xl p-3 border border-white/10 flex flex-col gap-2.5 shadow-2xl w-full select-none">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/10 pb-2">
         <div className="flex items-center gap-2">
