@@ -1,14 +1,16 @@
 // ORBITLAB — Unit Conversions Utility
 // Maps between human scientific units (AU, km, Earth mass, Solar mass, etc.) and internal SI units
 
-import { ASTRONOMICAL_UNIT, EARTH_MASS, SOLAR_MASS } from '../physics/constants';
+import { ASTRONOMICAL_UNIT, EARTH_MASS, EARTH_RADIUS, SOLAR_MASS, SOLAR_RADIUS } from '../physics/constants';
 
 // Distance
-export type DistanceUnit = 'm' | 'km' | 'AU';
+export type DistanceUnit = 'm' | 'km' | 'AU' | 'earth_radius' | 'solar_radius';
 export const DISTANCE_CONVERSIONS: Record<DistanceUnit, number> = {
   m: 1,
   km: 1e3,
   AU: ASTRONOMICAL_UNIT,
+  earth_radius: EARTH_RADIUS,
+  solar_radius: SOLAR_RADIUS,
 };
 
 export function toSIMeters(value: number, unit: DistanceUnit): number {

@@ -32,6 +32,15 @@ export function formatVelocitySI(mps: number): string {
   return `${mps.toFixed(1)} m/s`;
 }
 
+export function formatAccelerationSI(mps2: number): string {
+  if (!Number.isFinite(mps2)) return '—';
+  const abs = Math.abs(mps2);
+  if (abs >= 1e3 || (abs < 1e-2 && abs > 0)) {
+    return `${mps2.toExponential(3)} m/s²`;
+  }
+  return `${mps2.toFixed(3)} m/s²`;
+}
+
 export function formatForceSI(n: number): string {
   if (!Number.isFinite(n)) return '—';
   if (n >= 1e24) return `${(n / 1e24).toFixed(3)} YN`;
@@ -47,20 +56,14 @@ export function formatForceSI(n: number): string {
 
 export function formatEnergySI(joules: number): string {
   if (!Number.isFinite(joules)) return '—';
-  const sign = joules < 0 ? '-' : '';
   const abs = Math.abs(joules);
-  if (abs >= 1e33) return `${sign}${(abs / 1e33).toFixed(3)}×10³³ J`;
-  if (abs >= 1e30) return `${sign}${(abs / 1e30).toFixed(3)}×10³⁰ J`;
-  if (abs >= 1e27) return `${sign}${(abs / 1e27).toFixed(3)}×10²⁷ J`;
-  if (abs >= 1e24) return `${sign}${(abs / 1e24).toFixed(3)} YJ`;
-  if (abs >= 1e21) return `${sign}${(abs / 1e21).toFixed(3)} ZJ`;
-  if (abs >= 1e18) return `${sign}${(abs / 1e18).toFixed(3)} EJ`;
-  if (abs >= 1e15) return `${sign}${(abs / 1e15).toFixed(3)} PJ`;
-  if (abs >= 1e12) return `${sign}${(abs / 1e12).toFixed(3)} TJ`;
-  if (abs >= 1e9) return `${sign}${(abs / 1e9).toFixed(3)} GJ`;
-  if (abs >= 1e6) return `${sign}${(abs / 1e6).toFixed(3)} MJ`;
-  if (abs >= 1e3) return `${sign}${(abs / 1e3).toFixed(2)} kJ`;
-  return `${sign}${abs.toFixed(1)} J`;
+  if (abs >= 1e12 || (abs < 1e-2 && abs > 0)) {
+    return `${joules.toExponential(2)} J`;
+  }
+  if (abs >= 1e9) return `${(joules / 1e9).toFixed(2)} GJ`;
+  if (abs >= 1e6) return `${(joules / 1e6).toFixed(2)} MJ`;
+  if (abs >= 1e3) return `${(joules / 1e3).toFixed(2)} kJ`;
+  return `${joules.toFixed(1)} J`;
 }
 
 export function formatTimeSI(seconds: number): string {

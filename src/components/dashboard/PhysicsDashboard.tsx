@@ -15,8 +15,10 @@ import {
   Zap,
 } from 'lucide-react';
 import type { SystemState } from '../../physics/physics-types';
+import { vec3 } from '../../physics/vector3';
 import { CanvasChart, type DataSeries } from './CanvasChart';
 import {
+  formatAccelerationSI,
   formatDistanceSI,
   formatEnergySI,
   formatForceSI,
@@ -65,11 +67,16 @@ export const PhysicsDashboard: React.FC<PhysicsDashboardProps> = ({
     conservation,
   } = systemState;
 
-  // Format orbital period
+  // Format orbital period & apoapsis for unbound/bound orbits
+  const isUnbound = orbit.eccentricity >= 1 || orbit.specificOrbitalEnergy >= 0 || orbit.orbitType === 'parabolic' || orbit.orbitType === 'hyperbolic';
   const formatPeriod = (sec: number) => {
-    if (!Number.isFinite(sec)) return '∞ (Unbound / Radial)';
+    if (isUnbound || !Number.isFinite(sec)) return '∞ (Unbound)';
     return formatTimeSI(sec);
   };
+
+  const a1Mag = vec3.length(systemState.bodies[0].acceleration);
+  const a2Mag = vec3.length(systemState.bodies[1].acceleration);
+  const rcmDist = vec3.length(systemState.barycenter.position);
 
   // Conservation error badges
   const getBadgeStyle = (err: number) => {
@@ -209,7 +216,7 @@ export const PhysicsDashboard: React.FC<PhysicsDashboardProps> = ({
           <div>
             <span className="text-slate-400 text-[9px] block">Apoapsis (r_a)</span>
             <span className="text-slate-100">
-              {Number.isFinite(orbit.apoapsis) ? formatDistanceSI(orbit.apoapsis) : '∞ (Unbound)'}
+              {isUnbound || !Number.isFinite(orbit.apoapsis) ? '∞ (Unbound)' : formatDistanceSI(orbit.apoapsis)}
             </span>
           </div>
         </div>
@@ -249,11 +256,48 @@ export const PhysicsDashboard: React.FC<PhysicsDashboardProps> = ({
 
         <div className="bg-space-900/70 p-2 rounded-lg border border-white/5">
           <div className="flex items-center justify-between text-slate-400 text-[9px] uppercase font-mono">
+            <span>Center of Mass</span>
+            <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+          </div>
+          <div className="text-xs font-semibold font-mono text-amber-300 mt-0.5">
+            {rcmDist < 1 ? '0.00 m (Origin)' : formatDistanceSI(rcmDist)}
+          </div>
+        </div>
+
+        <div className="bg-space-900/70 p-2 rounded-lg border border-white/5">
+          <div className="flex items-center justify-between text-slate-400 text-[9px] uppercase font-mono">
+            <span>|a₁| ({systemState.bodies[0].name.split(' ')[0]})</span>
+          </div>
+          <div className="text-xs font-semibold font-mono text-blue-300 mt-0.5">
+            {formatAccelerationSI(a1Mag)}
+          </div>
+        </div>
+
+        <div className="bg-space-900/70 p-2 rounded-lg border border-white/5">
+          <div className="flex items-center justify-between text-slate-400 text-[9px] uppercase font-mono">
+            <span>|a₂| ({systemState.bodies[1].name.split(' ')[0]})</span>
+          </div>
+          <div className="text-xs font-semibold font-mono text-orange-300 mt-0.5">
+            {formatAccelerationSI(a2Mag)}
+          </div>
+        </div>
+
+        <div className="bg-space-900/70 p-2 rounded-lg border border-white/5">
+          <div className="flex items-center justify-between text-slate-400 text-[9px] uppercase font-mono">
             <span>Angular Mom (|L|)</span>
             <Compass className="w-3 h-3 text-amber-400" />
           </div>
           <div className="text-xs font-semibold font-mono text-amber-400 mt-0.5">
             {angularMomentum.magnitude.toExponential(3)}
+          </div>
+        </div>
+
+        <div className="bg-space-900/70 p-2 rounded-lg border border-white/5">
+          <div className="flex items-center justify-between text-slate-400 text-[9px] uppercase font-mono">
+            <span>Linear Mom (|P|)</span>
+          </div>
+          <div className="text-xs font-semibold font-mono text-slate-300 mt-0.5">
+            {linearMomentum.magnitude < 1e-4 ? '0.00 kg·m/s' : `${linearMomentum.magnitude.toExponential(2)}`}
           </div>
         </div>
       </div>

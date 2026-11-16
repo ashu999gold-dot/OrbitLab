@@ -5,15 +5,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Activity,
   BookOpen,
-  Camera,
-  FlaskConical,
   Maximize2,
+  Minimize2,
   Orbit,
-  Pause,
-  Play,
-  RotateCcw,
   Sliders,
-  StepForward,
 } from 'lucide-react';
 import type { CelestialBody, SystemState, Vector3D } from './physics/physics-types';
 import { PRESET_LIBRARY, type PresetSystem } from './simulation/presets';
@@ -22,8 +17,7 @@ import { OrbitCanvas, type CameraFocusMode, type CameraPresetView } from './comp
 import type { ReferenceFrameMode } from './visualization/ScaleManager';
 import { ControlsPanel } from './components/controls/ControlsPanel';
 import { PhysicsDashboard } from './components/dashboard/PhysicsDashboard';
-import { UniversalObjectEditor } from './components/object-editor/UniversalObjectEditor';
-import { ExperimentsModal } from './components/experiments/ExperimentsModal';
+import { BottomControlStrip } from './components/controls/BottomControlStrip';
 import { EducationalModal } from './components/educational/EducationalModal';
 import { exportConfigurationToJson, importConfigurationFromJson } from './utils/export-import';
 import { formatTimeSI } from './utils/formatting';
@@ -41,31 +35,23 @@ export const App: React.FC = () => {
 
   // Visualization & Reference Frames
   const [referenceFrame, setReferenceFrame] = useState<ReferenceFrameMode>('inertial');
-  const [enableExaggeratedRadius, setEnableExaggeratedRadius] = useState<boolean>(true);
-  const [cameraFocus, setCameraFocus] = useState<CameraFocusMode>('barycenter');
-  const [cameraViewTrigger, setCameraViewTrigger] = useState<CameraPresetView>('isometric');
+  const [enableExaggeratedRadius] = useState<boolean>(true);
+  const [cameraFocus] = useState<CameraFocusMode>('barycenter');
+  const [cameraViewTrigger] = useState<CameraPresetView>('isometric');
   const [resetCameraTrigger, setResetCameraTrigger] = useState<number>(1);
 
   // Visual Overlays
   const [showTrails, setShowTrails] = useState<boolean>(true);
-  const [showComparisonOverlay, setShowComparisonOverlay] = useState<boolean>(false);
   const [showVelocityVectors, setShowVelocityVectors] = useState<boolean>(true);
   const [showForceVectors, setShowForceVectors] = useState<boolean>(true);
   const [showBarycenter, setShowBarycenter] = useState<boolean>(true);
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [showDistanceLine, setShowDistanceLine] = useState<boolean>(true);
 
-  // Modals & Drawers
-  const [showObjectEditor, setShowObjectEditor] = useState<boolean>(false);
-  const [showExperimentsModal, setShowExperimentsModal] = useState<boolean>(false);
+  // Panels & Modals
   const [showEducationModal, setShowEducationModal] = useState<boolean>(false);
   const [showControls, setShowControls] = useState<boolean>(true);
   const [showDashboard, setShowDashboard] = useState<boolean>(true);
-
-  // Trajectory Comparison Baseline
-  const [baselineTrail1, setBaselineTrail1] = useState<Vector3D[] | undefined>(undefined);
-  const [baselineTrail2, setBaselineTrail2] = useState<Vector3D[] | undefined>(undefined);
-  const [hasActiveBaseline, setHasActiveBaseline] = useState<boolean>(false);
 
   // Decoupled Simulation Engine Reference
   const engineRef = useRef<SimulationEngine>(
@@ -85,7 +71,7 @@ export const App: React.FC = () => {
   const [historyPotential, setHistoryPotential] = useState<number[]>([systemState.potentialEnergy]);
   const [historyTotal, setHistoryTotal] = useState<number[]>([systemState.totalEnergy]);
 
-  // Current active trajectory buffer accumulator for snapshotting
+  // Current active trajectory buffer accumulator
   const activeTrail1Ref = useRef<Vector3D[]>([]);
   const activeTrail2Ref = useRef<Vector3D[]>([]);
   const lastUiUpdateRef = useRef<number>(0);
@@ -151,7 +137,7 @@ export const App: React.FC = () => {
     setIsPlaying((prev) => !prev);
   }, []);
 
-  // Apply custom bodies from Object Editor
+  // Apply custom bodies from Setup Panel
   const handleApplyCustomBodies = useCallback((b1: CelestialBody, b2: CelestialBody) => {
     engineRef.current.reset(b1, b2, 0);
     const newState = engineRef.current.getState();
@@ -167,52 +153,6 @@ export const App: React.FC = () => {
     activeTrail2Ref.current = [{ ...b2.position }];
 
     setResetCameraTrigger((c) => c + 1);
-    setShowObjectEditor(false);
-  }, []);
-
-  // Apply state from Guided Experiment
-  const handleApplyExperimentState = useCallback(
-    (b1: CelestialBody, b2: CelestialBody, _baselineLabel: string) => {
-      // Auto snapshot current trajectory as comparison baseline if not already set
-      if (!hasActiveBaseline && activeTrail1Ref.current.length > 5) {
-        setBaselineTrail1([...activeTrail1Ref.current]);
-        setBaselineTrail2([...activeTrail2Ref.current]);
-        setHasActiveBaseline(true);
-        setShowComparisonOverlay(true);
-      }
-
-      engineRef.current.reset(b1, b2, 0);
-      const newState = engineRef.current.getState();
-      setSystemState(newState);
-
-      setHistoryTime([0]);
-      setHistoryDistance([newState.distance]);
-      setHistoryKinetic([newState.kineticEnergy.total]);
-      setHistoryPotential([newState.potentialEnergy]);
-      setHistoryTotal([newState.totalEnergy]);
-
-      activeTrail1Ref.current = [{ ...b1.position }];
-      activeTrail2Ref.current = [{ ...b2.position }];
-
-      setResetCameraTrigger((c) => c + 1);
-      setShowExperimentsModal(false);
-    },
-    [hasActiveBaseline]
-  );
-
-  // Baseline Comparison Snapshot Actions
-  const handleSaveComparisonBaseline = useCallback(() => {
-    setBaselineTrail1([...activeTrail1Ref.current]);
-    setBaselineTrail2([...activeTrail2Ref.current]);
-    setHasActiveBaseline(true);
-    setShowComparisonOverlay(true);
-  }, []);
-
-  const handleClearComparisonBaseline = useCallback(() => {
-    setBaselineTrail1(undefined);
-    setBaselineTrail2(undefined);
-    setHasActiveBaseline(false);
-    setShowComparisonOverlay(false);
   }, []);
 
   // Clear Graph History
@@ -247,7 +187,7 @@ export const App: React.FC = () => {
     }
   }, [handleApplyCustomBodies]);
 
-  // Main Decoupled Physics Loop (Runs on requestAnimationFrame with fixed integration dt)
+  // Main Decoupled Physics Loop (Symplectic integration step)
   useEffect(() => {
     let animId: number;
     let lastTimestamp = performance.now();
@@ -343,7 +283,7 @@ export const App: React.FC = () => {
       {/* 1. TOP NAVBAR */}
       <header className="h-14 px-4 bg-space-900/90 backdrop-blur-md border-b border-white/10 flex items-center justify-between z-30 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md shadow-blue-500/20">
               <Orbit className="w-5 h-5 text-white animate-spin" style={{ animationDuration: '24s' }} />
             </div>
@@ -355,13 +295,13 @@ export const App: React.FC = () => {
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 hidden sm:block">
-                Universal Two-Body Gravitational Simulator • Statics & Dynamics
+                3D Two-Body Gravitational Simulator • Statics & Dynamics
               </p>
             </div>
           </div>
         </div>
 
-        {/* Quick Presets Pills */}
+        {/* Quick Presets Selector Pills */}
         <div className="hidden lg:flex items-center gap-1.5 bg-space-950/80 p-1 rounded-lg border border-white/5">
           {PRESET_LIBRARY.map((p) => {
             const isSelected = p.id === currentPreset.id;
@@ -381,69 +321,14 @@ export const App: React.FC = () => {
           })}
         </div>
 
-        {/* Action Header Buttons */}
-        <div className="flex items-center gap-1.5">
-          {/* Unified Transport Controls */}
-          <div className="flex items-center bg-space-950/80 p-0.5 rounded-lg border border-white/10">
-            <button
-              onClick={handleTogglePlay}
-              className={`py-1 px-2.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                isPlaying
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
-                  : 'bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/30'
-              }`}
-              title="Spacebar: Play/Pause"
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-              <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
-            </button>
-
-            <button
-              onClick={handleStepForward}
-              disabled={isPlaying}
-              className="p-1.5 rounded-md hover:bg-white/5 text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="S: Step Forward by 1 Timestep (Δt)"
-            >
-              <StepForward className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={handleReset}
-              className="p-1.5 rounded-md hover:bg-white/5 text-slate-300 hover:text-rose-300 transition-colors"
-              title="R: Reset Simulation"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={() => setResetCameraTrigger((c) => c + 1)}
-              className="p-1.5 rounded-md hover:bg-white/5 text-slate-300 hover:text-white transition-colors"
-              title="C: Reset Camera View Orientation"
-            >
-              <Camera className="w-3.5 h-3.5" />
-            </button>
+        {/* Right Tools & Theory */}
+        <div className="flex items-center gap-2">
+          {/* Quick Simulation Time Readout */}
+          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-space-950/80 border border-white/10 text-xs font-mono">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-slate-400">t:</span>
+            <span className="text-slate-100 font-semibold">{formatTimeSI(systemState.time)}</span>
           </div>
-
-          <div className="w-px h-5 bg-white/10 mx-0.5" />
-
-          {/* Tools */}
-          <button
-            onClick={() => setShowObjectEditor(true)}
-            className="px-2.5 py-1.5 rounded-lg bg-space-850 hover:bg-space-800 text-slate-200 border border-white/10 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
-            title="Edit Celestial Body Masses, Radii, Positions & Velocities"
-          >
-            <Sliders className="w-3.5 h-3.5 text-blue-400" />
-            <span className="hidden md:inline">Edit Bodies</span>
-          </button>
-
-          <button
-            onClick={() => setShowExperimentsModal(true)}
-            className="px-2.5 py-1.5 rounded-lg bg-space-850 hover:bg-space-800 text-purple-300 border border-white/10 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
-            title="Open Guided Experiments & Comparison"
-          >
-            <FlaskConical className="w-3.5 h-3.5 text-purple-400" />
-            <span className="hidden md:inline">Experiments</span>
-          </button>
 
           <button
             onClick={() => setShowEducationModal(true)}
@@ -451,19 +336,19 @@ export const App: React.FC = () => {
             title="Open ME 206 Statics & Dynamics Theory Guide"
           >
             <BookOpen className="w-3.5 h-3.5 text-blue-400" />
-            <span className="hidden lg:inline">Theory Guide</span>
+            <span className="hidden sm:inline">Theory Guide</span>
           </button>
 
           <div className="w-px h-5 bg-white/10 mx-0.5 hidden sm:block" />
 
-          {/* Sidebars & Zen View Toggles */}
-          <div className="hidden sm:flex items-center gap-1 bg-space-950/80 p-0.5 rounded-lg border border-white/10 text-xs">
+          {/* Sidebar View Toggles */}
+          <div className="flex items-center gap-1 bg-space-950/80 p-0.5 rounded-lg border border-white/10 text-xs">
             <button
               onClick={() => setShowControls(!showControls)}
               className={`p-1.5 rounded-md transition-all ${
                 showControls ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'text-slate-400 hover:text-slate-200'
               }`}
-              title={showControls ? 'Hide Controls Panel' : 'Show Controls Panel'}
+              title={showControls ? 'Hide Setup Panel' : 'Show Setup Panel'}
             >
               <Sliders className="w-3.5 h-3.5" />
             </button>
@@ -473,7 +358,7 @@ export const App: React.FC = () => {
               className={`p-1.5 rounded-md transition-all ${
                 showDashboard ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'text-slate-400 hover:text-slate-200'
               }`}
-              title={showDashboard ? 'Hide Telemetry Dashboard' : 'Show Telemetry Dashboard'}
+              title={showDashboard ? 'Hide Physics Telemetry' : 'Show Physics Telemetry'}
             >
               <Activity className="w-3.5 h-3.5" />
             </button>
@@ -493,13 +378,13 @@ export const App: React.FC = () => {
               }`}
               title={!showControls && !showDashboard ? 'Exit Zen View (Show Panels)' : 'Zen View: Full 3D Focus'}
             >
-              <Maximize2 className="w-3.5 h-3.5" />
+              {!showControls && !showDashboard ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* 2. MAIN 3D WORKSPACE WITH FLOATING OVERLAYS */}
+      {/* 2. MAIN 3D WORKSPACE (HERO) */}
       <main className="relative flex-1 w-full h-full overflow-hidden">
         {/* Full-screen 3D WebGL Canvas */}
         <div className="absolute inset-0 z-0">
@@ -511,9 +396,7 @@ export const App: React.FC = () => {
             referenceFrame={referenceFrame}
             cameraFocus={cameraFocus}
             showTrails={showTrails}
-            showComparisonOverlay={showComparisonOverlay}
-            comparisonTrail1={baselineTrail1}
-            comparisonTrail2={baselineTrail2}
+            showComparisonOverlay={false}
             showVelocityVectors={showVelocityVectors}
             showForceVectors={showForceVectors}
             showBarycenter={showBarycenter}
@@ -525,62 +408,30 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {/* Floating Left Overlay: Simulation Controls & Presets */}
+        {/* Floating Left Overlay: Simulation Setup Panel */}
         <div className="absolute top-4 left-4 z-20 w-80">
-          {showControls ? (
-            <ControlsPanel
-              isPlaying={isPlaying}
-              onTogglePlay={handleTogglePlay}
-              onReset={handleReset}
-              onStepForward={handleStepForward}
-              timeScale={timeScale}
-              onTimeScaleChange={setTimeScale}
-              fixedDt={fixedDt}
-              onFixedDtChange={setFixedDt}
-              substeps={substeps}
-              onSubstepsChange={setSubsteps}
-              currentPresetId={currentPreset.id}
-              onSelectPreset={handleSelectPreset}
-              bodies={systemState.bodies}
-              referenceFrame={referenceFrame}
-              onReferenceFrameChange={setReferenceFrame}
-              enableExaggeratedRadius={enableExaggeratedRadius}
-              onToggleExaggeratedRadius={() => setEnableExaggeratedRadius(!enableExaggeratedRadius)}
-              cameraFocus={cameraFocus}
-              onCameraFocusChange={setCameraFocus}
-              onSetCameraView={setCameraViewTrigger}
-              showTrails={showTrails}
-              onToggleTrails={() => setShowTrails(!showTrails)}
-              showComparisonOverlay={showComparisonOverlay}
-              onToggleComparisonOverlay={() => setShowComparisonOverlay(!showComparisonOverlay)}
-              showVelocityVectors={showVelocityVectors}
-              onToggleVelocityVectors={() => setShowVelocityVectors(!showVelocityVectors)}
-              showForceVectors={showForceVectors}
-              onToggleForceVectors={() => setShowForceVectors(!showForceVectors)}
-              showBarycenter={showBarycenter}
-              onToggleBarycenter={() => setShowBarycenter(!showBarycenter)}
-              showGrid={showGrid}
-              onToggleGrid={() => setShowGrid(!showGrid)}
-              showDistanceLine={showDistanceLine}
-              onToggleDistanceLine={() => setShowDistanceLine(!showDistanceLine)}
-              onResetCameraView={() => setResetCameraTrigger((c) => c + 1)}
-              onExportConfig={handleExportConfig}
-              onImportConfig={handleImportConfig}
-              onOpenExperiments={() => setShowExperimentsModal(true)}
-              onOpenObjectEditor={() => setShowObjectEditor(true)}
-            />
-          ) : (
-            <button
-              onClick={() => setShowControls(true)}
-              className="glass-panel px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white flex items-center gap-2 hover:bg-space-850/80 transition-all border border-white/10 shadow-lg"
-            >
-              <Sliders className="w-4 h-4 text-blue-400" />
-              <span>Show Controls</span>
-            </button>
-          )}
+          <ControlsPanel
+            currentPresetId={currentPreset.id}
+            onSelectPreset={handleSelectPreset}
+            bodies={systemState.bodies}
+            onApplyCustomBodies={handleApplyCustomBodies}
+            onReset={handleReset}
+            timeScale={timeScale}
+            onTimeScaleChange={setTimeScale}
+            fixedDt={fixedDt}
+            onFixedDtChange={setFixedDt}
+            substeps={substeps}
+            onSubstepsChange={setSubsteps}
+            referenceFrame={referenceFrame}
+            onReferenceFrameChange={setReferenceFrame}
+            onExportConfig={handleExportConfig}
+            onImportConfig={handleImportConfig}
+            isCollapsed={!showControls}
+            onToggleCollapse={() => setShowControls(!showControls)}
+          />
         </div>
 
-        {/* Floating Right Overlay: Live Physics Dashboard & Graphs */}
+        {/* Floating Right Overlay: Live Physics Dashboard */}
         <div className="absolute top-4 right-4 z-20 w-80">
           <PhysicsDashboard
             systemState={systemState}
@@ -597,8 +448,8 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {/* Center-Top Quick Status Indicator */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 hidden xl:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-space-900/80 backdrop-blur-md border border-white/10 text-xs font-mono shadow-xl">
+        {/* Center-Top Status Indicator */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 hidden md:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-space-900/80 backdrop-blur-md border border-white/10 text-xs font-mono shadow-xl">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-slate-400">Time:</span>
@@ -620,23 +471,36 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Centered Modal: Universal Object Editor */}
-        {showObjectEditor && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="max-w-lg w-full max-h-[90vh] overflow-y-auto">
-              <UniversalObjectEditor
-                bodies={systemState.bodies}
-                onApplyBodies={handleApplyCustomBodies}
-                onResetToPreset={handleReset}
-                onClose={() => setShowObjectEditor(false)}
-              />
-            </div>
-          </div>
-        )}
+        {/* Bottom Control Strip */}
+        <BottomControlStrip
+          isPlaying={isPlaying}
+          onTogglePlay={handleTogglePlay}
+          onStepForward={handleStepForward}
+          onReset={handleReset}
+          timeScale={timeScale}
+          onTimeScaleChange={setTimeScale}
+          showTrails={showTrails}
+          onToggleTrails={() => setShowTrails(!showTrails)}
+          showBarycenter={showBarycenter}
+          onToggleBarycenter={() => setShowBarycenter(!showBarycenter)}
+          showGrid={showGrid}
+          onToggleGrid={() => setShowGrid(!showGrid)}
+          showDistanceLine={showDistanceLine}
+          onToggleDistanceLine={() => setShowDistanceLine(!showDistanceLine)}
+          showVelocityVectors={showVelocityVectors}
+          onToggleVelocityVectors={() => setShowVelocityVectors(!showVelocityVectors)}
+          showForceVectors={showForceVectors}
+          onToggleForceVectors={() => setShowForceVectors(!showForceVectors)}
+          onResetCameraView={() => setResetCameraTrigger((c) => c + 1)}
+          showControls={showControls}
+          onToggleControls={() => setShowControls(!showControls)}
+          showDashboard={showDashboard}
+          onToggleDashboard={() => setShowDashboard(!showDashboard)}
+        />
       </main>
 
       {/* 3. FOOTER STATUS BAR */}
-      <footer className="h-8 px-4 bg-space-950 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400 z-30 shrink-0">
+      <footer className="h-7 px-4 bg-space-950 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400 z-30 shrink-0">
         <div className="flex items-center gap-3 font-mono">
           <span className="flex items-center gap-1.5">
             <span className="text-slate-500">Integrator:</span>
@@ -680,17 +544,7 @@ export const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* 4. GUIDED EXPERIMENTS MODAL */}
-      <ExperimentsModal
-        isOpen={showExperimentsModal}
-        onClose={() => setShowExperimentsModal(false)}
-        onApplyExperimentState={handleApplyExperimentState}
-        onSaveComparisonBaseline={handleSaveComparisonBaseline}
-        hasActiveBaseline={hasActiveBaseline}
-        onClearComparisonBaseline={handleClearComparisonBaseline}
-      />
-
-      {/* 5. EDUCATIONAL THEORY GUIDE MODAL */}
+      {/* 4. EDUCATIONAL THEORY GUIDE MODAL */}
       <EducationalModal
         isOpen={showEducationModal}
         onClose={() => setShowEducationModal(false)}

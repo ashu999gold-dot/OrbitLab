@@ -74,7 +74,7 @@ export const CanvasChart: React.FC<CanvasChartProps> = ({
     // Clear background
     ctx.clearRect(0, 0, width, height);
 
-    const padding = { top: 18, right: 12, bottom: 22, left: 52 };
+    const padding = { top: 18, right: 12, bottom: 22, left: 66 };
     const chartW = Math.max(10, width - padding.left - padding.right);
     const chartH = Math.max(10, height - padding.top - padding.bottom);
 
@@ -106,10 +106,12 @@ export const CanvasChart: React.FC<CanvasChartProps> = ({
       maxY = 1;
     }
 
-    // Add 10% margin padding
-    if (minY === maxY) {
-      minY -= 1;
-      maxY += 1;
+    // Add adaptive margin padding (handles constant value cases like circular orbits)
+    const valAbs = Math.abs(maxY) || 1;
+    if (maxY - minY < 1e-4 * valAbs) {
+      const margin = 0.05 * valAbs;
+      minY -= margin;
+      maxY += margin;
     } else {
       const span = maxY - minY;
       minY -= span * 0.08;
