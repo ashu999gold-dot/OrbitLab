@@ -4,7 +4,7 @@
 ![OrbitLab Banner](https://img.shields.io/badge/ME%20206-Two--Body%20Orbital%20Mechanics-3b82f6?style=for-the-badge)
 ![Integrator](https://img.shields.io/badge/Integrator-Symplectic%20Velocity%20Verlet-10b981?style=for-the-badge)
 ![Units](https://img.shields.io/badge/SI%20Units-Pure%20MKS%20Engine-f97316?style=for-the-badge)
-![Tests](https://img.shields.io/badge/Vitest-14%2F14%20Passing-emerald?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Vitest-24%2F24%20Passing-emerald?style=for-the-badge)
 
 ---
 
@@ -253,6 +253,7 @@ npm test
 ```
 
 ### Test Coverage Highlights:
+- `src/tests/physics/me206-physics.test.ts`: Complete verification of the 10 core ME 206 physical laws (Newton's law of gravitation, accelerations, COM kinematics, momentum conservation, angular momentum conservation, total mechanical energy, circular orbit $v_{circ}$, elliptical orbit Vis-Viva, hyperbolic escape $v \ge v_{esc}$, and surface collision detection).
 - `src/tests/physics/gravity.test.ts`: Newton's Third Law action-reaction parity ($\vec{F}_1 = -\vec{F}_2$), inverse-square scaling ($F \propto 1/r^2$), gravitational potential energy.
 - `src/tests/physics/integrator.test.ts`: Symplectic phase-space preservation (energy drift $< 10^{-5}$ over full orbital periods), angular momentum invariance ($< 10^{-12}$), center-of-mass momentum invariance.
 - `src/tests/physics/orbital-elements.test.ts`: Conic classification thresholds, Vis-Viva velocity consistency, degenerate radial collision cases ($h \approx 0$), semi-major axis, and orbital period verification against Kepler's 3rd Law.
