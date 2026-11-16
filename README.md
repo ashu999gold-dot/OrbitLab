@@ -5,6 +5,7 @@
 ![Integrator](https://img.shields.io/badge/Integrator-Symplectic%20Velocity%20Verlet-10b981?style=for-the-badge)
 ![Units](https://img.shields.io/badge/SI%20Units-Pure%20MKS%20Engine-f97316?style=for-the-badge)
 ![Tests](https://img.shields.io/badge/Vitest-24%2F24%20Passing-emerald?style=for-the-badge)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fashu999gold-dot%2FOrbitLab)
 
 ---
 
