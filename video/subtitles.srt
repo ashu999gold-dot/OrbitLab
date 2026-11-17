@@ -1,0 +1,132 @@
+1
+00:00:00,500 --> 00:00:06,800
+How do two objects move when they interact solely through mutual gravitational attraction?
+
+2
+00:00:07,200 --> 00:00:14,500
+Welcome to ORBITLAB, an interactive 3D simulator engineered for the BTech ME 206 course in Statics and Dynamics at IIT Gandhinagar.
+
+3
+00:00:15,000 --> 00:00:23,000
+OrbitLab brings the classical two-body problem to life through high-precision numerical physics and modern web rendering.
+
+4
+00:00:24,000 --> 00:00:28,500
+To model two celestial bodies, we begin with fundamental Newtonian mechanics.
+
+5
+00:00:29,000 --> 00:00:34,000
+Consider two masses, m1 and m2, separated by a relative distance r.
+
+6
+00:00:34,500 --> 00:00:42,500
+By Newton's Law of Universal Gravitation, each body exerts an equal and opposite force on the other: F equals G m1 m2 over r squared.
+
+7
+00:00:43,000 --> 00:00:50,500
+Because Newton's third law guarantees action and reaction are collinear and opposite, the net external force on the system is zero.
+
+8
+00:00:51,000 --> 00:00:56,500
+This crucial property means the system's center of mass, or barycenter, remains unaccelerated.
+
+9
+00:00:57,000 --> 00:01:02,500
+Neither body is anchored in space. Instead, both bodies accelerate dynamically around their shared center of mass.
+
+10
+00:01:03,500 --> 00:01:08,200
+In OrbitLab, motion is computed from the exact equations of motion.
+
+11
+00:01:08,800 --> 00:01:17,500
+The vector acceleration of body 1 is G m2 over r cubed times r, and for body 2, minus G m1 over r cubed times r.
+
+12
+00:01:18,200 --> 00:01:25,800
+To propagate these equations forward in time without artificial energy drift, OrbitLab implements a symplectic Velocity Verlet integrator using a kick-drift-kick sequence.
+
+13
+00:01:26,400 --> 00:01:32,200
+First, positions advance by half a timestep of velocity and acceleration.
+
+14
+00:01:32,800 --> 00:01:38,500
+Next, gravitational forces and accelerations are re-evaluated at the updated positions.
+
+15
+00:01:39,000 --> 00:01:45,800
+Finally, velocities are updated using the average of previous and newly computed accelerations.
+
+16
+00:01:46,500 --> 00:01:57,200
+Unlike naive Forward Euler methods which suffer from runaway energy growth, our symplectic scheme preserves phase-space volume and maintains bounded energy oscillations over thousands of orbital revolutions.
+
+17
+00:01:58,200 --> 00:02:03,500
+Let's now explore the live OrbitLab application interface.
+
+18
+00:02:04,000 --> 00:02:09,500
+The workspace is divided into three intuitive panels.
+
+19
+00:02:10,000 --> 00:02:19,800
+On the left is the Controls Panel, where users select presets or fine-tune individual masses, separations, velocities, and orbital plane angles.
+
+20
+00:02:20,500 --> 00:02:33,200
+In the center is the interactive 3D canvas, powered by Three.js and React Three Fiber, featuring smooth orbit controls, dynamic celestial trails, velocity vectors, and barycenter markers.
+
+21
+00:02:34,000 --> 00:02:49,500
+On the right, the Real-Time Telemetry Dashboard displays precise instantaneous values: accelerations, gravitational force, specific orbital energy, angular momentum, and live energy conservation curves.
+
+22
+00:02:50,200 --> 00:03:05,000
+At the bottom, a streamlined control strip lets you play, pause, step forward, toggle simulation layers, and scale time from real-time up to hundreds of thousands of times acceleration.
+
+23
+00:03:05,800 --> 00:03:22,800
+Notice how the Earth-Moon system reveals the barycenter situated 4,671 kilometers from Earth's center—resting inside Earth's mantle, exactly as predicted by theory.
+
+24
+00:03:24,000 --> 00:03:31,200
+OrbitLab enables rigorous experimentation across different mass ratios and energetic regimes.
+
+25
+00:03:31,800 --> 00:03:42,000
+Selecting the Equal-Mass Binary preset demonstrates two identical stars orbiting their shared midpoint in empty space.
+
+26
+00:03:42,600 --> 00:03:53,500
+Notice that both bodies experience identical acceleration magnitudes, and total linear momentum remains precisely zero throughout the orbit.
+
+27
+00:03:54,200 --> 00:04:04,500
+Next, we examine an Escape Trajectory by boosting initial orbital speed beyond the local escape velocity.
+
+28
+00:04:05,200 --> 00:04:12,000
+As the eccentricity surpasses 1, the trajectory opens into a hyperbola.
+
+29
+00:04:12,800 --> 00:04:23,500
+The telemetry dashboard immediately detects that total mechanical energy has become positive, and marks both the apoapsis and orbital period as infinite and unbound.
+
+30
+00:04:24,200 --> 00:04:33,000
+This visual and numerical correlation provides immediate physical insight into orbital mechanics.
+
+31
+00:04:34,200 --> 00:04:42,800
+In summary, ORBITLAB demonstrates that rigorous Newtonian mechanics and symplectic integration can be combined with modern interactive 3D web technology.
+
+32
+00:04:43,400 --> 00:04:56,000
+Fully tested with 24 automated unit tests covering energy conservation, Keplerian periods, and center-of-mass invariance, OrbitLab serves as an open-source educational platform for engineering students and educators alike.
+
+33
+00:04:56,800 --> 00:05:04,500
+Thank you for watching our ME 206 project demonstration.
+

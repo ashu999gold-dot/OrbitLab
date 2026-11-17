@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scene 1 - Project Introduction</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #050814;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #F8FAFC;
+      position: relative;
+    }
+    /* Starfield Canvas */
+    #canvas-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    /* Nebula Glows */
+    .glow-cyan {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 70%);
+      top: -150px;
+      left: -100px;
+      z-index: 2;
+      filter: blur(40px);
+    }
+    .glow-purple {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+      bottom: -200px;
+      right: -100px;
+      z-index: 2;
+      filter: blur(50px);
+    }
+    /* Layout */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 1920px;
+      height: 1080px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 100px 70px 100px;
+    }
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 9999px;
+      padding: 8px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #38BDF8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+    }
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #38BDF8;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #38BDF8;
+      animation: pulse 2s infinite;
+    }
+    .inst-badge {
+      font-size: 16px;
+      color: #94A3B8;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+    /* Hero Content */
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 60px;
+      margin-top: -20px;
+    }
+    .hero-text {
+      flex: 1;
+      max-width: 900px;
+    }
+    .title-h1 {
+      font-size: 82px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #FFFFFF 20%, #38BDF8 60%, #818CF8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.3));
+    }
+    .subtitle {
+      font-size: 32px;
+      font-weight: 400;
+      color: #CBD5E1;
+      line-height: 1.4;
+      margin-bottom: 28px;
+    }
+    .description {
+      font-size: 21px;
+      color: #94A3B8;
+      line-height: 1.6;
+      border-left: 3px solid #38BDF8;
+      padding-left: 20px;
+    }
+    /* Orbital Canvas Graphic */
+    .orbit-visual {
+      width: 640px;
+      height: 520px;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.7) 0%, rgba(5, 8, 20, 0.9) 70%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(56, 189, 248, 0.05);
+    }
+    #sim-canvas {
+      width: 100%;
+      height: 100%;
+    }
+    .overlay-tag {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: monospace;
+      color: #38BDF8;
+    }
+    /* Bottom Badges */
+    .features-strip {
+      display: flex;
+      gap: 20px;
+    }
+    .feature-card {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #38BDF8;
+      font-size: 20px;
+    }
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-bottom: 4px;
+    }
+    .feature-sub {
+      font-size: 13px;
+      color: #64748B;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-cyan"></div>
+  <div class="glow-purple"></div>
+  <canvas id="canvas-bg"></canvas>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        ME 206 Academic Demonstration · Statics & Dynamics
+      </div>
+      <div class="inst-badge">
+        Indian Institute of Technology Gandhinagar
+      </div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="title-h1">ORBITLAB</h1>
+        <div class="subtitle">3D Two-Body Gravitational Simulator</div>
+        <div class="description">
+          An interactive scientific simulation platform exploring Newtonian two-body mechanics,
+          symplectic numerical integration, barycentric kinematics, and live orbital dynamics.
+        </div>
+      </div>
+
+      <div class="orbit-visual">
+        <div class="overlay-tag">SIMULATION ENGINE: ACTIVE</div>
+        <canvas id="sim-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Bottom Highlights -->
+    <div class="features-strip">
+      <div class="feature-card">
+        <div class="feature-icon">⚛</div>
+        <div>
+          <div class="feature-title">Newtonian Gravity</div>
+          <div class="feature-sub">F = G·m₁m₂ / r²</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div>
+          <div class="feature-title">Velocity Verlet</div>
+          <div class="feature-sub">Symplectic Kick-Drift-Kick</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div>
+          <div class="feature-title">Center-of-Mass Frame</div>
+          <div class="feature-sub">Dynamic Barycentric Motion</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div>
+          <div class="feature-title">Energy Invariants</div>
+          <div class="feature-sub">Strict ΔE/E Conservation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Animated Background Starfield
+    const bgCanvas = document.getElementById('canvas-bg');
+    const bgCtx = bgCanvas.getContext('2d');
+    bgCanvas.width = 1920;
+    bgCanvas.height = 1080;
+
+    const stars = [];
+    for (let i = 0; i < 180; i++) {
+      stars.push({
+        x: Math.random() * 1920,
+        y: Math.random() * 1080,
+        r: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.7 + 0.3,
+        speed: Math.random() * 0.02 + 0.01
+      });
+    }
+
+    // Mini 2D Orbital Simulation in preview window
+    const simCanvas = document.getElementById('sim-canvas');
+    const simCtx = simCanvas.getContext('2d');
+    simCanvas.width = 640;
+    simCanvas.height = 520;
+
+    const cx = 320;
+    const cy = 260;
+    let angle = 0;
+    const trail1 = [];
+    const trail2 = [];
+
+    function render() {
+      // Starfield
+      bgCtx.fillStyle = '#050814';
+      bgCtx.fillRect(0, 0, 1920, 1080);
+      for (const s of stars) {
+        s.alpha += s.speed;
+        const currentAlpha = Math.abs(Math.sin(s.alpha));
+        bgCtx.fillStyle = `rgba(255, 255, 255, ${currentAlpha * 0.8})`;
+        bgCtx.beginPath();
+        bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+
+      // Orbital Simulation
+      simCtx.fillStyle = 'rgba(7, 12, 26, 0.25)';
+      simCtx.fillRect(0, 0, 640, 520);
+
+      // Grid Lines
+      simCtx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      simCtx.lineWidth = 1;
+      for (let x = 40; x < 640; x += 40) {
+        simCtx.beginPath();
+        simCtx.moveTo(x, 0);
+        simCtx.lineTo(x, 520);
+        simCtx.stroke();
+      }
+      for (let y = 40; y < 520; y += 40) {
+        simCtx.beginPath();
+        simCtx.moveTo(0, y);
+        simCtx.lineTo(640, y);
+        simCtx.stroke();
+      }
+
+      // Parameters for unequal mass binary (Earth-Moon like)
+      angle += 0.022;
+      const a = 170;
+      const b = 130;
+      const m1 = 5.97;
+      const m2 = 0.73;
+      const M = m1 + m2;
+
+      const r1 = (m2 / M) * a;
+      const r2 = (m1 / M) * a;
+
+      const x1 = cx - r1 * Math.cos(angle);
+      const y1 = cy - (r1 * b / a) * Math.sin(angle);
+
+      const x2 = cx + r2 * Math.cos(angle);
+      const y2 = cy + (r2 * b / a) * Math.sin(angle);
+
+      trail1.push({ x: x1, y: y1 });
+      trail2.push({ x: x2, y: y2 });
+      if (trail1.length > 120) trail1.shift();
+      if (trail2.length > 120) trail2.shift();
+
+      // Draw trails
+      simCtx.lineWidth = 2;
+      for (let i = 1; i < trail1.length; i++) {
+        const alpha = i / trail1.length;
+        simCtx.strokeStyle = `rgba(56, 189, 248, ${alpha * 0.7})`;
+        simCtx.beginPath();
+        simCtx.moveTo(trail1[i - 1].x, trail1[i - 1].y);
+        simCtx.lineTo(trail1[i].x, trail1[i].y);
+        simCtx.stroke();
+      }
+
+      for (let i = 1; i < trail2.length; i++) {
+        const alpha = i / trail2.length;
+        simCtx.strokeStyle = `rgba(245, 158, 11, ${alpha * 0.7})`;
+        simCtx.beginPath();
+        simCtx.moveTo(trail2[i - 1].x, trail2[i - 1].y);
+        simCtx.lineTo(trail2[i].x, trail2[i].y);
+        simCtx.stroke();
+      }
+
+      // Draw Barycenter
+      simCtx.fillStyle = '#EF4444';
+      simCtx.beginPath();
+      simCtx.arc(cx, cy, 4, 0, Math.PI * 2);
+      simCtx.fill();
+      simCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+      simCtx.beginPath();
+      simCtx.arc(cx, cy, 9, 0, Math.PI * 2);
+      simCtx.stroke();
+      simCtx.fillStyle = '#94A3B8';
+      simCtx.font = '11px monospace';
+      simCtx.fillText('Barycenter (COM)', cx + 12, cy + 4);
+
+      // Connecting line
+      simCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      simCtx.setLineDash([3, 4]);
+      simCtx.beginPath();
+      simCtx.moveTo(x1, y1);
+      simCtx.lineTo(x2, y2);
+      simCtx.stroke();
+      simCtx.setLineDash([]);
+
+      // Draw Body 1 (Primary)
+      const grad1 = simCtx.createRadialGradient(x1, y1, 2, x1, y1, 20);
+      grad1.addColorStop(0, '#FFFFFF');
+      grad1.addColorStop(0.3, '#38BDF8');
+      grad1.addColorStop(1, 'rgba(14, 165, 233, 0)');
+      simCtx.fillStyle = grad1;
+      simCtx.beginPath();
+      simCtx.arc(x1, y1, 20, 0, Math.PI * 2);
+      simCtx.fill();
+
+      simCtx.fillStyle = '#0284C7';
+      simCtx.beginPath();
+      simCtx.arc(x1, y1, 12, 0, Math.PI * 2);
+      simCtx.fill();
+
+      // Draw Body 2 (Secondary)
+      const grad2 = simCtx.createRadialGradient(x2, y2, 1, x2, y2, 14);
+      grad2.addColorStop(0, '#FFFBEB');
+      grad2.addColorStop(0.4, '#F59E0B');
+      grad2.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      simCtx.fillStyle = grad2;
+      simCtx.beginPath();
+      simCtx.arc(x2, y2, 14, 0, Math.PI * 2);
+      simCtx.fill();
+
+      simCtx.fillStyle = '#D97706';
+      simCtx.beginPath();
+      simCtx.arc(x2, y2, 7, 0, Math.PI * 2);
+      simCtx.fill();
+
+      // Velocity vectors
+      simCtx.lineWidth = 2;
+      // v1
+      const vx1 = (r1 * b / a) * Math.sin(angle) * 0.4;
+      const vy1 = -r1 * Math.cos(angle) * 0.4;
+      simCtx.strokeStyle = '#38BDF8';
+      simCtx.beginPath();
+      simCtx.moveTo(x1, y1);
+      simCtx.lineTo(x1 + vx1, y1 + vy1);
+      simCtx.stroke();
+
+      // v2
+      const vx2 = -(r2 * b / a) * Math.sin(angle) * 0.4;
+      const vy2 = r2 * Math.cos(angle) * 0.4;
+      simCtx.strokeStyle = '#F59E0B';
+      simCtx.beginPath();
+      simCtx.moveTo(x2, y2);
+      simCtx.lineTo(x2 + vx2, y2 + vy2);
+      simCtx.stroke();
+
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>
