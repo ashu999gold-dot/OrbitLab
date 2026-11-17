@@ -1,7 +1,12 @@
 {
-  "name": "me-206-assignment-2-body-simulator",
+  "name": "orbitlab-2body-simulator",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "homepage": "https://orbitlab-eight.vercel.app/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashu999gold-dot/OrbitLab.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

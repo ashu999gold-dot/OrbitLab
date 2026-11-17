@@ -1,19 +1,22 @@
 # ORBITLAB — UNIVERSAL 3D TWO-BODY GRAVITATIONAL SIMULATOR
 ### ME 206 Statics and Dynamics | Computational Engineering Dynamics Project
 
-![OrbitLab Banner](https://img.shields.io/badge/ME%20206-Two--Body%20Orbital%20Mechanics-3b82f6?style=for-the-badge)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-orbitlab--eight.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://orbitlab-eight.vercel.app/)
+![ME 206](https://img.shields.io/badge/ME%20206-Two--Body%20Orbital%20Mechanics-3b82f6?style=for-the-badge)
 ![Integrator](https://img.shields.io/badge/Integrator-Symplectic%20Velocity%20Verlet-10b981?style=for-the-badge)
 ![Units](https://img.shields.io/badge/SI%20Units-Pure%20MKS%20Engine-f97316?style=for-the-badge)
 ![Tests](https://img.shields.io/badge/Vitest-24%2F24%20Passing-emerald?style=for-the-badge)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fashu999gold-dot%2FOrbitLab)
+
+🌐 **Live Application:** [https://orbitlab-eight.vercel.app/](https://orbitlab-eight.vercel.app/)  
+📂 **GitHub Repository:** [https://github.com/ashu999gold-dot/OrbitLab](https://github.com/ashu999gold-dot/OrbitLab)
 
 ---
 
 ## 1. Executive Summary & Objective
 
-**ORBITLAB** is a high-precision, interactive 3D two-body gravitational mechanics simulation platform engineered for the **ME 206 Statics and Dynamics** curriculum. 
+**ORBITLAB** is a high-precision, interactive 3D two-body gravitational mechanics simulation platform engineered for the **ME 206 Statics and Dynamics** curriculum.
 
-The software models the deterministic physical interaction of two arbitrary spherical masses moving in three-dimensional space under mutual Newtonian gravitation ($F = G \frac{m_1 m_2}{r^2}$). By implementing a second-order symplectic **kick-drift-kick Velocity Verlet** numerical integrator, OrbitLab preserves phase space volume and constrains relative energy drift strictly below $10^{-4}$ (0.01%) over thousands of integration steps, avoiding the unphysical spiral degradation characteristic of standard Euler methods.
+The application is deployed live and fully functional at **[https://orbitlab-eight.vercel.app/](https://orbitlab-eight.vercel.app/)**.
 
 The application serves as an interactive computational laboratory: students and engineers can define custom celestial or hypothetical bodies, modify their state vectors in Cartesian or orbital parameters, switch between Inertial and Barycentric reference frames, inspect real-time conservation law metrics, overlay historical ghost comparison trajectories, and execute guided experiments verifying Keplerian orbital mechanics.
 
@@ -277,8 +280,8 @@ Runs independent analytical tests for circular orbit stability, Earth-Moon sider
 ### Setup
 ```bash
 # 1. Clone repository
-git clone https://github.com/your-username/me-206-orbital-simulator.git
-cd me-206-orbital-simulator
+git clone https://github.com/ashu999gold-dot/OrbitLab.git
+cd OrbitLab
 
 # 2. Install dependencies
 npm install
