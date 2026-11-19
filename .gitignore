@@ -26,4 +26,7 @@ dist-ssr
 # Video production scratch and raw recordings
 video/raw/
 video/concat_raw.mp4
+video/scenes/
+video/audio/
+video/concat_list.txt
 

@@ -22,7 +22,158 @@ The application serves as an interactive computational laboratory: students and 
 
 ---
 
-## 2. Fundamental Governing Equations
+## 2. Step-by-Step Procedure to Run the Simulator
+
+### Method A: Run Instantly in Browser (Zero Installation)
+
+No software installation or environment configuration is required to run the simulator. Open the live deployment directly in any modern web browser with WebGL support (Google Chrome, Microsoft Edge, Mozilla Firefox, Apple Safari, or Brave):
+
+👉 **[https://orbitlab-eight.vercel.app/](https://orbitlab-eight.vercel.app/)**
+
+---
+
+### Method B: Run Locally from Source Code (Step-by-Step)
+
+Follow these exact steps to clone, set up, and run ORBITLAB locally on your computer:
+
+#### Prerequisites
+Ensure the following tools are installed on your machine:
+- **Git**: [https://git-scm.com/](https://git-scm.com/)
+- **Node.js** (`v18.0.0` or higher; `v20+` recommended): [https://nodejs.org/](https://nodejs.org/)
+- **npm** (`v9.0.0` or higher, included automatically with Node.js)
+
+To verify your environment, run in your terminal:
+```bash
+git --version
+node -v
+npm -v
+```
+
+#### Step 1: Clone the GitHub Repository
+Open your terminal (PowerShell, Command Prompt, or bash) and clone the project:
+```bash
+git clone https://github.com/ashu999gold-dot/OrbitLab.git
+cd OrbitLab
+```
+
+#### Step 2: Install Project Dependencies
+Install the required packages (React, TypeScript, Three.js, React Three Fiber, Tailwind CSS, Lucide React, and Vitest):
+```bash
+npm install
+```
+
+#### Step 3: Start the Local Development Server
+Launch the interactive Vite development server:
+```bash
+npm run dev
+```
+
+The terminal will confirm the local address:
+```
+  VITE v6.x.x  ready in ~350 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+```
+Open **`http://localhost:5173/`** in your browser. The simulator will load immediately with the Earth–Moon system ready to run.
+
+#### Step 4: (Optional) Build & Preview Production Bundle
+To compile the production-optimized static web build and preview it:
+```bash
+npm run build
+npm run preview
+```
+The preview server will run at **`http://localhost:4173/`**.
+
+#### Step 5: (Optional) Run the Automated Physics Test Suite
+To execute the comprehensive 24-test Vitest physics suite (verifying energy invariants, Kepler's 3rd Law, barycentric kinematics, and escape velocities):
+```bash
+npm test
+```
+Or for a single non-interactive run:
+```bash
+npx vitest run
+```
+
+---
+
+### Method C: Step-by-Step Operating Guide (How to Use the Simulator)
+
+Once the simulator is open in your browser, follow this workflow to run and analyze orbital scenarios:
+
+```
+┌─────────────────────────┐     ┌─────────────────────────┐     ┌─────────────────────────┐
+│ 1. Select Scenario      │ ──> │ 2. Start & Scale Time   │ ──> │ 3. Navigate 3D Viewport │
+│ (Preset or Custom Body) │     │ (Play, Step, Speed xN)  │     │ (Orbit, Pan, Zoom)      │
+└─────────────────────────┘     └─────────────────────────┘     └─────────────────────────┘
+                                                                             │
+┌─────────────────────────┐     ┌─────────────────────────┐                  ▼
+│ 6. Analyze Telemetry    │ <── │ 5. Customize Parameters │ <── ┌─────────────────────────┐
+│ (Energy Drift, Conic)   │     │ (Mass, Orbit, Radius)   │     │ 4. Toggle Overlays      │
+└─────────────────────────┘     └─────────────────────────┘     │ (Vectors, Trails, Bary) │
+                                                                └─────────────────────────┘
+```
+
+1. **Step 1: Choose a Simulation Preset**
+   - In the left **Controls Panel**, select the **Presets** tab.
+   - Choose from 4 curated physical systems:
+     - **Earth–Moon System**: Observe the Moon orbiting Earth with the barycenter inside Earth's mantle ($4,671\text{ km}$ from center).
+     - **Sun–Earth System**: Observe extreme mass-ratio Keplerian motion ($333,000:1$) over an annual period ($1\text{ AU}$, $365.25\text{ days}$).
+     - **Equal-Mass Binary Stars**: Observe two identical stars orbiting their shared midpoint in empty space with zero total momentum.
+     - **Escape Trajectory**: Observe an unbound hyperbolic flyby ($e = 1.56$, $E > 0$, apoapsis and period $\infty$).
+
+2. **Step 2: Control Simulation Playback & Transport**
+   - Use the docked **Bottom Control Strip**:
+     - **Play / Pause** (or press `Space`): Start or halt numerical time integration.
+     - **Step Forward** (or press `S`): Advance the simulation by exactly one numerical timestep ($\Delta t$) for frame-by-frame analysis.
+     - **Reset** (or press `R`): Restore both bodies to their exact initial state and clear trajectory trails.
+
+3. **Step 3: Scale Time for the Physical Regime**
+   - Real-world astronomical systems operate across vast timescales:
+     - Use **1×**, **10×**, or **100×** for close laboratory inspections or high-velocity flybys.
+     - Use **180k×** ($180,000\times$ acceleration) to complete Earth–Moon orbits in seconds.
+     - Use **1.2M×** or the custom speed slider for annual interplanetary orbits.
+
+4. **Step 4: Navigate the 3D Camera Viewport**
+   - **Rotate / Orbit View**: Click and drag with the left mouse button across the canvas.
+   - **Pan Camera**: Click and drag with the right mouse button (or two-finger drag on trackpads).
+   - **Zoom In / Out**: Scroll the mouse wheel to zoom into planetary surfaces or zoom out to full orbital scale.
+   - **Reset View**: Click the camera icon in the bottom control strip to return to default centering.
+
+5. **Step 5: Toggle Visual Physical Overlays**
+   - Use the toggle buttons in the bottom control strip:
+     - **Trails**: Enable/disable continuous GPU orbital path histories.
+     - **Barycenter**: Toggle the glowing red center-of-mass crosshair.
+     - **Velocity Vectors**: Display instantaneous velocity vectors ($\vec{v}$) showing tangential speed and direction.
+     - **Force Vectors**: Display mutual gravitational attraction vectors ($\vec{F}$) illustrating Newton's 3rd Law.
+     - **Distance Line**: Show the direct connecting chord and real-time distance readout.
+     - **Coordinate Grid**: Display the 3D spatial reference plane.
+
+6. **Step 6: Configure Custom Physical Bodies & Orbits**
+   - Open the **Bodies** tab in the left panel:
+     - Customize mass ($m_1, m_2$) with automatic unit conversion between kilograms ($\text{kg}$), Earth masses ($M_\oplus$), and Solar masses ($M_\odot$).
+     - Customize physical radii ($R_1, R_2$) and display colors.
+   - Open the **Orbit** tab:
+     - Adjust initial separation distance ($r$) in $\text{m}$, $\text{km}$, or $\text{AU}$.
+     - Adjust the orbital speed factor ($v / v_{\text{circ}}$):
+       - Factor $< 1.0$: Tighter eccentric ellipse.
+       - Factor $= 1.0$: Pure circular Keplerian orbit.
+       - Factor $> 1.0$: Extended eccentric ellipse.
+       - Factor $> \sqrt{2} \approx 1.414$: Unbound hyperbolic escape trajectory ($e > 1, E > 0$).
+     - Adjust 3D orbital plane inclination angle.
+   - Click **"Apply Setup & Initialize COM"**: Automatically initializes both bodies in the zero-momentum center-of-mass frame ($\vec{P} = \vec{0}$).
+
+7. **Step 7: Monitor Real-Time Physics Telemetry**
+   - In the right **Physics Dashboard**, inspect:
+     - Instantaneous separation distance ($r$) and gravitational attraction force ($F$).
+     - Instantaneous acceleration magnitudes ($a_1, a_2$).
+     - Kinetic energy ($K$), potential energy ($U$), and total mechanical energy ($E$).
+     - **Symplectic Conservation Badge**: A green badge confirms that energy drift $|\Delta E / E| < 0.05\%$ is strictly bounded by the Velocity Verlet integrator.
+     - **Conic Classification**: Dynamic eccentricity ($e$), semi-major axis ($a$), and orbital period ($T$) updating every tick.
+
+---
+
+## 3. Fundamental Governing Equations
 
 All internal physics calculations are executed strictly in SI base units (meters, kilograms, seconds, Newtons, Joules). Conversions to astronomical units (AU, Earth masses, Solar masses, km/s) occur solely at the input/display boundary.
 
@@ -107,7 +258,7 @@ where $\mu_{std} = G(m_1 + m_2)$ is the standard gravitational parameter of the 
 
 ---
 
-## 3. Conservation Laws & Real-Time Drift Tracking
+## 4. Conservation Laws & Real-Time Drift Tracking
 
 The application monitors three fundamental invariants of Hamiltonian dynamics at every simulation tick:
 
@@ -128,7 +279,7 @@ Whenever $\Delta E_{rel} < 0.05\%$, a green badge confirms high-fidelity symplec
 
 ---
 
-## 4. Numerical Method: Symplectic Velocity Verlet
+## 5. Numerical Method: Symplectic Velocity Verlet
 
 Standard explicit schemes (such as Forward Euler) fail drastically in gravitational orbits because they artificially pump energy into the system, causing orbits to spiral outward uncontrollably. Explicit Runge-Kutta 4th order (RK4) produces excellent short-term accuracy but lacks phase-space area preservation (symplecticity), leading to long-term secular drift.
 
@@ -150,14 +301,14 @@ To ensure simulation stability across varying frame rates:
 
 ---
 
-## 5. Architectural Overview
+## 6. Architectural Overview
 
-The application follows a clean 5-layer decoupled architecture:
+The application follows a clean decoupled architecture:
 
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                      User Interface                      │
-│   (ControlsPanel, UniversalObjectEditor, Dashboard, ...) │
+│   (ControlsPanel, Canvas, PhysicsDashboard, Controls)   │
 └────────────────────────────┬─────────────────────────────┘
                              │
 ┌────────────────────────────▼─────────────────────────────┐
@@ -180,63 +331,50 @@ The application follows a clean 5-layer decoupled architecture:
 2. **Simulation Layer (`src/simulation/`)**: State containers, accumulator clocks, initial conditions generators, preset definitions, and validation guards.
 3. **Visualization Layer (`src/visualization/` & `src/components/canvas/`)**: Coordinate scaling, camera managers, Three.js WebGL canvas, GPU dynamic buffer geometry trails, vector arrows, and atmospheric glow shaders.
 4. **Dashboard Layer (`src/components/dashboard/`)**: Real-time telemetry, 60 FPS 2D Canvas charts, and conservation status badges.
-5. **Interactive Controls & Experiments (`src/components/`)**: Object editor with unit conversions, guided experiment workflows with ghost trajectory comparison snapshotting, and JSON export/import.
+5. **Interactive Controls (`src/components/controls/`)**: Streamlined ControlsPanel with unit conversions, presets library, and floating transport strip.
 
 ---
 
-## 6. Built-in Physical Presets
+## 7. Built-in Physical Presets
 
 | Preset | Body 1 ($m_1$) | Body 2 ($m_2$) | Initial Separation | Demonstration Key |
 | :--- | :--- | :--- | :--- | :--- |
 | **Earth–Moon System** | $5.972 \times 10^{24}$ kg | $7.342 \times 10^{22}$ kg | $384,400$ km | Barycenter is ~4,671 km from Earth's center (inside Earth mantle, $R_\oplus = 6,371$ km). Period is ~27.3 sidereal days. |
 | **Sun–Earth System** | $1.989 \times 10^{30}$ kg | $5.972 \times 10^{24}$ kg | $1.0$ AU ($1.496 \times 10^{11}$ m) | Extreme mass ratio (333,000:1). Barycenter is ~450 km from solar core. $T = 365.25$ days. |
-| **Binary Stars (Unequal)** | $2.984 \times 10^{30}$ kg ($1.5 M_\odot$) | $1.790 \times 10^{30}$ kg ($0.9 M_\odot$) | $0.8$ AU | Unequal circular orbits: lighter star orbits faster at a larger radius. |
-| **Equal-Mass Binary** | $1.989 \times 10^{30}$ kg ($1.0 M_\odot$) | $1.989 \times 10^{30}$ kg ($1.0 M_\odot$) | $1.0$ AU | Perfect circular symmetry around barycenter at $(0,0,0)$ with $\vec{P}_{total} = \vec{0}$. |
-| **Elliptical Orbit ($e = 0.75$)** | $1.989 \times 10^{30}$ kg | $10^{22}$ kg | $0.25$ AU (periapsis) | Vis-Viva energy exchange: extreme acceleration at periapsis and deceleration at apoapsis. |
-| **Hyperbolic Flyby ($e = 1.35$)** | $1.989 \times 10^{30}$ kg | $5 \times 10^{4}$ kg | $0.4$ AU (periapsis) | Unbound orbit ($\epsilon > 0$). Demonstrates gravitational slingshot and excess velocity at infinity. |
+| **Equal-Mass Binary** | $1.989 \times 10^{30}$ kg ($1.0 M_\odot$) | $1.989 \times 10^{30}$ kg ($1.0 M_\odot$) | $1.0$ AU | Perfect circular symmetry around barycenter at $(0,0,0)$ with $\vec{P}_{total} = \vec{0}$ and identical acceleration magnitudes ($a_1 = a_2$). |
+| **Escape Trajectory** | $1.989 \times 10^{30}$ kg ($1.0 M_\odot$) | $5 \times 10^{4}$ kg | $0.4$ AU (periapsis) | Unbound hyperbolic orbit ($e = 1.56, E > 0$). Demonstrates gravitational slingshot, excess velocity at infinity, and infinite apoapsis/period. |
 
 ---
 
-## 7. Interactive Feature Guide
+## 8. Interactive Feature & Controls Guide
 
-### 7.1 Universal Object Editor
-- **Body A & Body B Independent Configuration**: Customize name, display color, mass, radius, 3D position, and velocity.
-- **Input Modes**:
-  - **Simple Mode**: Configure initial separation distance, primary/secondary mass, and orbital speed factor (0.5 to 1.8 of circular velocity).
-  - **Advanced Cartesian Mode**: Input raw 3D vectors $(x, y, z)$ and $(v_x, v_y, v_z)$.
-- **Multi-Unit Selector**:
-  - Distance: meters ($\text{m}$), kilometers ($\text{km}$), Astronomical Units ($\text{AU}$).
-  - Mass: kilograms ($\text{kg}$), Earth masses ($M_\oplus$), Solar masses ($M_\odot$).
-  - Velocity: meters/second ($\text{m/s}$), kilometers/second ($\text{km/s}$).
-- **Zero Center-of-Mass Momentum Balancer**: Automatically adjusts Body 2's velocity such that the system's net linear momentum is exactly zero ($\vec{P} = \vec{0}$), ensuring the barycenter remains motionless.
-- **Circularize Velocity Button**: Instantly sets the transverse velocity of Body 2 to the exact circular Keplerian orbital speed $v_{circ} = \sqrt{G(m_1+m_2)/r}$.
+### 8.1 Simulation Setup Panel (`ControlsPanel`)
+- **Presets Tab**: Instant one-click selection of calibrated astronomical benchmarks.
+- **Bodies Tab**: Customize Body 1 and Body 2:
+  - Name and display color palette.
+  - Mass with multi-unit selector: kilograms ($\text{kg}$), Earth masses ($M_\oplus$), Solar masses ($M_\odot$).
+  - Physical radius with unit selector: meters ($\text{m}$), kilometers ($\text{km}$), Astronomical Units ($\text{AU}$).
+- **Orbit Tab**:
+  - Initial separation distance ($r$) in $\text{m}$, $\text{km}$, or $\text{AU}$.
+  - Orbital speed factor ($v / v_{\text{circ}}$) with circularization indicator.
+  - 3D orbital plane inclination angle.
+  - **"Apply Setup & Initialize COM"**: Recalculates velocities such that total system momentum is zero ($\vec{P} = \vec{0}$) in the barycentric frame.
 
-### 7.2 Guided Scientific Experiments & Ghost Trajectory Snapshotting
-Accessible via the **Experiments** button in the header:
-1. **Experiment 1: Orbit Shape vs Initial Velocity** — Inspect circular ($v = v_c$), elliptical ($v_c < v < v_{esc}$), and hyperbolic ($v > v_{esc}$) regimes.
-2. **Experiment 2: Mass Ratio and Barycenter Motion** — Compare symmetric binaries ($1:1$) against planetary systems ($333,000:1$) to observe barycenter displacement.
-3. **Experiment 3: Separation & Orbital Period (Kepler's 3rd Law)** — Verify that $T^2 / a^3 = 4\pi^2 / (G M)$ holds across different orbital separations.
-- **Ghost Comparison Baseline**: Click **"Snapshot as Ghost Baseline"** to freeze the current trajectory in the 3D scene as a dashed ghost trail. Modify masses or velocities and replay to observe the differential trajectory evolution side-by-side!
+### 8.2 Floating Bottom Control Strip (`BottomControlStrip`)
+- **Transport Controls**: Play, Pause, Step Forward ($\Delta t$), Reset ($R$).
+- **Speed Multipliers**: One-click presets ($1\times, 10\times, 100\times, 10\text{k}\times, 180\text{k}\times, 1.2\text{M}\times$).
+- **Overlay Toggles**: Orbital Trails, Barycenter Crosshair, Velocity Vectors, Force Vectors, Distance Line, Coordinate Grid.
+- **Camera Centering**: Quick reset to default 3D isometric view.
 
-### 7.3 Reference Frames & 3D Overlays
-- **Reference Frame Toggle**:
-  - `Inertial`: Trajectories rendered relative to the fixed laboratory space coordinates.
-  - `Barycentric`: Coordinates dynamically shifted so the barycenter stays at $(0, 0, 0)$.
-- **Camera Tracking Modes**: Focus camera on Barycenter (COM), Body 1, Body 2, or Free Orbit.
-- **Camera Perspective Presets**: One-click Top-Down, Side-View, and Isometric viewpoints.
-- **Physical Overlays**:
-  - Velocity vectors ($\vec{v}$) and Gravitational force vectors ($\vec{F}$).
-  - Barycenter crosshair marker and mutual separation line.
-  - Dynamic GPU buffer geometry orbital trails.
-  - Collision contact shockwave alert when $r \le R_1 + R_2$.
-
-### 7.4 Configuration Import & Export
-- **Export**: Generates a clean JSON file containing full body parameters, physical constants, simulation settings, and schema metadata.
-- **Import**: Validates JSON schema, mass/radius positivity, and coordinates before safely loading into the simulation.
+### 8.3 Real-Time Physics Telemetry Dashboard (`PhysicsDashboard`)
+- **Kinematic Readouts**: Instantaneous distance $r$, gravitational force $F$, vector accelerations $a_1, a_2$.
+- **Energy Invariants**: Kinetic energy $K$, gravitational potential energy $U$, total mechanical energy $E$.
+- **Symplectic Integrity**: Real-time relative energy drift tracking ($|\Delta E / E| < 0.05\%$) displayed on a live 60 FPS CanvasChart.
+- **Conic State**: Dynamic eccentricity ($e$), semi-major axis ($a$), orbital period ($T$), periapsis ($r_p$), and apoapsis ($r_a$).
 
 ---
 
-## 8. Physical Model Assumptions & Academic Limitations
+## 9. Physical Model Assumptions & Academic Limitations
 
 To maintain scientific integrity for ME 206, the simulator explicitly states its governing scope:
 
@@ -247,7 +385,7 @@ To maintain scientific integrity for ME 206, the simulator explicitly states its
 
 ---
 
-## 9. Verification & Automated Test Suite
+## 10. Verification & Automated Test Suite
 
 OrbitLab includes a comprehensive test suite powered by **Vitest** covering all mathematical and algorithmic modules:
 
@@ -256,7 +394,7 @@ OrbitLab includes a comprehensive test suite powered by **Vitest** covering all 
 npm test
 ```
 
-### Test Coverage Highlights:
+### Test Coverage Highlights (24/24 Tests Passing):
 - `src/tests/physics/me206-physics.test.ts`: Complete verification of the 10 core ME 206 physical laws (Newton's law of gravitation, accelerations, COM kinematics, momentum conservation, angular momentum conservation, total mechanical energy, circular orbit $v_{circ}$, elliptical orbit Vis-Viva, hyperbolic escape $v \ge v_{esc}$, and surface collision detection).
 - `src/tests/physics/gravity.test.ts`: Newton's Third Law action-reaction parity ($\vec{F}_1 = -\vec{F}_2$), inverse-square scaling ($F \propto 1/r^2$), gravitational potential energy.
 - `src/tests/physics/integrator.test.ts`: Symplectic phase-space preservation (energy drift $< 10^{-5}$ over full orbital periods), angular momentum invariance ($< 10^{-12}$), center-of-mass momentum invariance.
@@ -271,41 +409,23 @@ Runs independent analytical tests for circular orbit stability, Earth-Moon sider
 
 ---
 
-## 10. Installation & Local Development
+## 11. Project Demonstration Video & Deliverables
 
-### Prerequisites
-- **Node.js** >= 18.0.0
-- **npm** >= 9.0.0
+A complete, professionally produced 5-minute academic demonstration video is included in the repository:
 
-### Setup
-```bash
-# 1. Clone repository
-git clone https://github.com/ashu999gold-dot/OrbitLab.git
-cd OrbitLab
-
-# 2. Install dependencies
-npm install
-
-# 3. Run automated tests
-npm test
-
-# 4. Start local development server
-npm run dev
-```
-
-### Production Build & Static Preview
-```bash
-npm run build
-npm run preview
-```
-The application compiles into a zero-backend, statically deployable bundle in `dist/`, fully compatible with Vercel, Netlify, or GitHub Pages.
+- 🎬 **Demonstration Video**: [`video/ORBITLAB_Project_Demonstration.mp4`](video/ORBITLAB_Project_Demonstration.mp4) (1920×1080 Full HD, 30 FPS, H.264, AAC Stereo, 305.6s duration)
+- 📝 **Narration Script**: [`video/narration_script.md`](video/narration_script.md) (Complete timed narration across 6 scenes)
+- 📐 **Storyboard**: [`video/storyboard.md`](video/storyboard.md) (Scene-by-scene visual cues, camera paths, and telemetry markers)
+- 💬 **Subtitles**: [`video/subtitles.srt`](video/subtitles.srt) (33 aligned timecoded subtitle cues)
+- 🔬 **Production Notes**: [`video/production_notes.md`](video/production_notes.md) (Technical recording pipeline, WebGL instrumentation, and verification log)
 
 ---
 
-## 11. Academic Attribution
+## 12. Academic Attribution
 
 **Course:** ME 206 Statics and Dynamics  
+**Institution:** Indian Institute of Technology Gandhinagar (IITGN)  
 **Assignment:** 3D Two-Body Gravitational Orbital Mechanics Simulator  
-**Core Technologies:** React 19, TypeScript, Vite, Three.js, Tailwind CSS, Lucide React, Vitest  
+**Core Technologies:** React 19, TypeScript, Vite, Three.js, React Three Fiber, Tailwind CSS, Lucide React, Vitest  
 **Numerical Formulation:** Kick-drift-kick Symplectic Velocity Verlet ($\mathcal{O}(h^2)$)  
 **Standard Constants:** CODATA 2018 ($G = 6.67430 \times 10^{-11} \text{ m}^3\text{kg}^{-1}\text{s}^{-2}$)
